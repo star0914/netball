@@ -19,15 +19,24 @@ namespace Netball
         private bool isReady = false;
         private bool is_checked = false; //TODO all checked
 
+        private string seasonVal = "";
+        private string competitionVal = "";
+        private string roundVal = "";
+
         public string base_url = "https://mc.championdata.com";
         public string secondRouter = "/anz_premiership";
         private JArray avaliableIDs = new JArray();
         private List<dynamic> AvaliableGameInfo = new List<dynamic>() { };
 
-        private dynamic CompetitionsInfo;
-
         private string[] li_tournamentLists = new string[] { "ANZ Premiership", "Super Netball" };
-        private dynamic appData;
+
+        private string selectedId = "";
+        private string filePath = string.Empty;
+
+        private Dictionary<string, object> teamInfo = new Dictionary<string, object>();
+        private string[] TitleRow = { "Season", "Competition", "Round", "Date", "Team", "Opposition", "POS", "Name", "MIN", "QP", "G", "A", "GS%", "GA", "F", "FWA", "GN", "I", "IPT", "DEFG", "DEFN", "R", "CR", "PU", "C", "O", "GPT", "BP", "BH", "OFF", "CPB", "1ST", "2ND", "3RD", "4TH", "OT", "TOTAL", "Goals from Centre Pass", "Centre Pass to Goal Percentage", "Goals from Gain", "Gain to Goal Percentage", "Goals from Turnovers", "Turnover to Goal Percentage", "Missed Shot Conversion" };
+        private List<string[]> scrapedData = new List<string[]>() { };
+        private dynamic TeamData = new Object();
 
         public Netball()
         {
@@ -36,8 +45,9 @@ namespace Netball
 
         private void Netball_Load(object sender, EventArgs e)
         {
+            this.DisableCount();
+            this.DisableFormReady();
             this.initTournament();
-            this.GetInitialAllData();
         }
 
         private void initTournament()
@@ -47,7 +57,6 @@ namespace Netball
 
         private async Task GetInitialAllData()
         {
-
             await this.GETSeasonData();
             if (this.isReady) this.EnableReady();
         }
@@ -61,14 +70,16 @@ namespace Netball
 
         private async Task GETAvaliableIDS()
         {
+            dynamic appData = new object();
+            dynamic CompetitionsInfo = new object();
+            this.avaliableIDs = new JArray();
+
             string api = this.base_url + secondRouter + "/settings/application_settings.json";
-            Console.WriteLine(api);
-            await Task.Run(() => { this.appData = JsonConvert.DeserializeObject<dynamic>(GetAllData(api)); });
-            if (this.appData != null)
+            await Task.Run(() => { appData = JsonConvert.DeserializeObject<dynamic>(GetAllData(api)); });
+            if (appData != null)
             {
-                this.CompetitionsInfo = this.appData.competitionList.competition;
-                this.avaliableIDs = new JArray();
-                foreach (var item in this.CompetitionsInfo)
+                CompetitionsInfo = appData.competitionList.competition;
+                foreach (var item in CompetitionsInfo)
                 {
                     this.avaliableIDs.Add(item.id);
                 }
@@ -99,14 +110,11 @@ namespace Netball
 
         private void SETSeasonData()
         {
+            List<string> seasons = new List<string>() { };
             if (this.AvaliableGameInfo != null)
             {
-                List<string> seasons = new List<string>() { };
-                List<string> competitions = new List<string>() { };
-
                 foreach (var item in this.AvaliableGameInfo)
                 {
-                    string competition_name = item.name;
                     string season_name = item.season;
 
                     if (seasons.FindIndex(s => s.Equals(season_name)) == -1)
@@ -120,16 +128,14 @@ namespace Netball
 
         private void GETCompetitionData()
         {
+            List<string> competitions = new List<string>() { };
             if (this.AvaliableGameInfo != null)
             {
-                List<string> competitions = new List<string>() { };
-                competitions.Clear();
                 foreach (var item in this.AvaliableGameInfo)
                 {
                     string competition_name = item.name;
-                    string selected_season = li_season.Text.ToString();
 
-                    if (item.season == selected_season)
+                    if (item.season == this.seasonVal)
                     {
                         competitions.Add(competition_name);
                     }
@@ -145,12 +151,10 @@ namespace Netball
                 var roundCount = 0;
                 foreach (var item in this.AvaliableGameInfo)
                 {
-                    string selected_season = li_season.Text.ToString();
-                    string selected_competition = li_competition.Text.ToString();
-
-                    if (item.season == selected_season && item.name == selected_competition )
+                    if (item.season == this.seasonVal && item.name == this.competitionVal)
                     {
                         roundCount = item.rounds;
+                        this.selectedId = item.id;
                     }
                 }
 
@@ -165,30 +169,6 @@ namespace Netball
                 }
             }
         }
-
-        //private void GETRoundData() {
-        //    if (this.competitionLists != null)
-        //    {
-        //        var roundCount = 0;
-        //        dynamic compatitionInfo = this.competitionLists.competitionDetails.competition;
-        //        foreach (var item in compatitionInfo)
-        //        {
-        //            if (item.name == li_competition.Text)
-        //            {
-        //                 roundCount = item.rounds;
-        //            }
-        //        }
-
-        //        List<string> roundArray = new List<string>() { };
-        //        for (int i = 0; i < roundCount; i++)
-        //        {
-        //            roundArray.Add((i+1).ToString());
-        //        }
-
-        //        li_round.DataSource = roundArray;
-        //    }
-        //    else return;
-        //}
 
         private string GetAllData(string Url)
         {
@@ -253,7 +233,9 @@ namespace Netball
 
         private void Li_tournament_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(li_tournament.Text == "ANZ Premiership")
+            this.DisableCount();
+            this.DisableFormReady();
+            if (li_tournament.Text == "ANZ Premiership")
             {
                 this.secondRouter = "/anz_premiership";
             }
@@ -264,31 +246,87 @@ namespace Netball
             this.GetInitialAllData();
         }
 
-        private void BtnFetchResult_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void Btn_refresh_Click(object sender, EventArgs e)
         {
+            this.DisableFormReady();
+            Console.WriteLine("--- reload ---");
+            this.DisableCount();
             this.GetInitialAllData();
-            Console.WriteLine("---  refresh  ---");
-
         }
 
         private void Li_season_SelectedIndexChanged(object sender, EventArgs e)
         {
+            this.seasonVal = li_season.Text;
             this.GETCompetitionData();
         }
 
         private void Li_competition_SelectedIndexChanged(object sender, EventArgs e)
         {
-             this.GETRoundData();
+            this.competitionVal = li_competition.Text;
+            this.GETRoundData();
         }
 
         private void Li_round_SelectedIndexChanged(object sender, EventArgs e)
         {
+            this.roundVal = li_round.Text;
+            this.EnableFormReady();
+        }
 
+        private void BtnFetchResult_Click(object sender, EventArgs e)
+        {
+            //this.filePath = string.Empty;
+
+            //using (var fbd = new FolderBrowserDialog())
+            //{
+            //    DialogResult result = fbd.ShowDialog();
+
+            //    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+            //    {
+            //        this.filePath = fbd.SelectedPath;
+            //        this.GetTeamInfo();
+            //    }
+            //}
+
+            this.GetTeamInfo();
+
+        }
+
+        private async Task GetTeamInfo()
+        {
+            Console.WriteLine("--------team info------------");
+            Console.WriteLine(this.selectedId);
+        }
+
+        private void DisableCount()
+        {
+            la_total.Text = "";
+            la_slash.Text = "";
+            la_cu_state.Text = "";
+            la_team.Text = "";
+        }
+
+        private void DisplayCount()
+        {
+            la_total.Text = "0";
+            la_slash.Text = "/";
+            la_cu_state.Text = "0";
+            la_team.Text = "teams";
+        }
+
+        private void EnableFormReady()
+        {
+            li_season.Enabled = true;
+            li_competition.Enabled = true;
+            li_round.Enabled = true;
+            btnFetchResult.Enabled = true;
+        }
+
+        private void DisableFormReady()
+        {
+            li_season.Enabled = false;
+            li_competition.Enabled = false;
+            li_round.Enabled = false;
+            btnFetchResult.Enabled = false;
         }
 
     }
