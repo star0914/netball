@@ -21,16 +21,13 @@ namespace Netball
 
         public string base_url = "https://mc.championdata.com";
         public string secondRouter = "/anz_premiership";
-        private string competitionID = string.Empty;
+        private JArray avaliableIDs = new JArray();
+        private List<dynamic> AvaliableGameInfo = new List<dynamic>() { };
 
         private dynamic CompetitionsInfo;
 
         private string[] li_tournamentLists = new string[] { "ANZ Premiership", "Super Netball" };
         private dynamic appData;
-
-        private JArray initialFormData = new JArray();
-
-        private dynamic competitionLists;
 
         public Netball()
         {
@@ -50,11 +47,19 @@ namespace Netball
 
         private async Task GetInitialAllData()
         {
+
             await this.GETSeasonData();
             if (this.isReady) this.EnableReady();
         }
 
         private async Task GETSeasonData()
+        {
+            await this.GETAvaliableIDS();
+            await this.GETAvaliableGameInfo();
+            this.SETSeasonData();
+        }
+
+        private async Task GETAvaliableIDS()
         {
             string api = this.base_url + secondRouter + "/settings/application_settings.json";
             Console.WriteLine(api);
@@ -62,104 +67,128 @@ namespace Netball
             if (this.appData != null)
             {
                 this.CompetitionsInfo = this.appData.competitionList.competition;
-                List<string> seasons = new List<string>() { };
-
-                this.initialFormData = new JArray();
-
-
-                JObject Job = new JObject(
-                    new JProperty("season", ""),
-                    new JProperty("ids"),
-                    new JProperty("competitions")
-                );
-                JArray Ids = (JArray)Job["ids"];
-                JArray Competitions = (JArray)Job["competitions"];
-
+                this.avaliableIDs = new JArray();
                 foreach (var item in this.CompetitionsInfo)
                 {
-                    string competition_name = item.competition_name;
-                    string season_name = competition_name.Split(' ')[0];
+                    this.avaliableIDs.Add(item.id);
+                }
+            }
+            else return;
+        }
+
+        private async Task GETAvaliableGameInfo()
+        {
+            this.AvaliableGameInfo = new List<dynamic>() { };
+            dynamic competitionLists = new object();
+            string api = this.base_url + "/data/competitions.json";
+
+            await Task.Run(() => { competitionLists = JsonConvert.DeserializeObject<dynamic>(GetAllData(api)); });
+            if (competitionLists != null)
+            {
+                dynamic compatitionInfo = competitionLists.competitionDetails.competition;
+                foreach (var item in compatitionInfo)
+                {
+                    if (this.avaliableIDs.ToList().IndexOf(item.id) > -1)
+                    {
+                        this.AvaliableGameInfo.Add(item);
+                    }
+                }
+            }
+            else return;
+        }
+
+        private void SETSeasonData()
+        {
+            if (this.AvaliableGameInfo != null)
+            {
+                List<string> seasons = new List<string>() { };
+                List<string> competitions = new List<string>() { };
+
+                foreach (var item in this.AvaliableGameInfo)
+                {
+                    string competition_name = item.name;
+                    string season_name = item.season;
 
                     if (seasons.FindIndex(s => s.Equals(season_name)) == -1)
                     {
-                        if (!Job["season"].Equals(""))
-                        {
-                            this.initialFormData.Add(Job);
-                            Ids.Clear();
-                            Competitions.Clear();
-                        }
                         seasons.Add(season_name);
-                        Job["season"] = season_name;
-                        Ids.Add(item.id);
-                        Competitions.Add(item.competition_name);
-                    } else
-                    {
-                        Ids.Add(item.id);
-                        Competitions.Add(item.competition_name);
                     }
                 }
                 li_season.DataSource = seasons;
             }
-            else return;
         }
 
         private void GETCompetitionData()
         {
-            JArray competitionIds = new JArray();
-            foreach (var item in this.initialFormData)
+            if (this.AvaliableGameInfo != null)
             {
-                if (item["season"].ToString() == li_season.Text)
+                List<string> competitions = new List<string>() { };
+                competitions.Clear();
+                foreach (var item in this.AvaliableGameInfo)
                 {
-                    competitionIds = (JArray)item["ids"];
-                }
-            }
-            this.CompetitionData(competitionIds);
-        }
+                    string competition_name = item.name;
+                    string selected_season = li_season.Text.ToString();
 
-        private async Task CompetitionData(JArray CompetitionIds)
-        {
-            this.competitionLists = new object();
-            List<string> competitions = new List<string>() { };
-            string api = this.base_url + "/data/competitions.json";
-            await Task.Run(() => { this.competitionLists = JsonConvert.DeserializeObject<dynamic>(GetAllData(api)); });
-            if (this.competitionLists != null)
-            {
-                dynamic compatitionInfo = this.competitionLists.competitionDetails.competition;
-                foreach (var item in compatitionInfo)
-                {
-                    if (CompetitionIds.ToList().IndexOf(item.id) > -1)
+                    if (item.season == selected_season)
                     {
-                        competitions.Add(item.name.ToString());
+                        competitions.Add(competition_name);
                     }
                 }
                 li_competition.DataSource = competitions;
             }
-            else return;
         }
 
-        private void GETRoundData() {
-            if (this.competitionLists != null)
+        private void GETRoundData()
+        {
+            if (this.AvaliableGameInfo != null)
             {
                 var roundCount = 0;
-                dynamic compatitionInfo = this.competitionLists.competitionDetails.competition;
-                foreach (var item in compatitionInfo)
+                foreach (var item in this.AvaliableGameInfo)
                 {
-                    if (item.name == li_competition.Text)
+                    string selected_season = li_season.Text.ToString();
+                    string selected_competition = li_competition.Text.ToString();
+
+                    if (item.season == selected_season && item.name == selected_competition )
                     {
-                         roundCount = item.rounds;
+                        roundCount = item.rounds;
                     }
                 }
 
-                List<string> roundArray = new List<string>() { };
-                for (int i = 0; i < roundCount; i++)
+                if (roundCount > 0 )
                 {
-                    roundArray.Add((i+1).ToString());
+                    List<string> roundArray = new List<string>() { };
+                    for (int i = 0; i < roundCount; i++)
+                    {
+                        roundArray.Add((i + 1).ToString());
+                    }
+                    li_round.DataSource = roundArray;
                 }
-
-                li_round.DataSource = roundArray;
             }
-            else return;
         }
+
+        //private void GETRoundData() {
+        //    if (this.competitionLists != null)
+        //    {
+        //        var roundCount = 0;
+        //        dynamic compatitionInfo = this.competitionLists.competitionDetails.competition;
+        //        foreach (var item in compatitionInfo)
+        //        {
+        //            if (item.name == li_competition.Text)
+        //            {
+        //                 roundCount = item.rounds;
+        //            }
+        //        }
+
+        //        List<string> roundArray = new List<string>() { };
+        //        for (int i = 0; i < roundCount; i++)
+        //        {
+        //            roundArray.Add((i+1).ToString());
+        //        }
+
+        //        li_round.DataSource = roundArray;
+        //    }
+        //    else return;
+        //}
 
         private string GetAllData(string Url)
         {
