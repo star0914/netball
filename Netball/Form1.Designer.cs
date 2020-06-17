@@ -78,8 +78,9 @@
             this.li_season.FormattingEnabled = true;
             this.li_season.Location = new System.Drawing.Point(56, 184);
             this.li_season.Name = "li_season";
-            this.li_season.Size = new System.Drawing.Size(267, 28);
+            this.li_season.Size = new System.Drawing.Size(131, 28);
             this.li_season.TabIndex = 10;
+            this.li_season.SelectedIndexChanged += new System.EventHandler(this.Li_season_SelectedIndexChanged);
             // 
             // lb_season
             // 
@@ -95,16 +96,17 @@
             // 
             this.li_competition.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.li_competition.FormattingEnabled = true;
-            this.li_competition.Location = new System.Drawing.Point(393, 184);
+            this.li_competition.Location = new System.Drawing.Point(251, 184);
             this.li_competition.Name = "li_competition";
-            this.li_competition.Size = new System.Drawing.Size(131, 28);
+            this.li_competition.Size = new System.Drawing.Size(267, 28);
             this.li_competition.TabIndex = 12;
+            this.li_competition.SelectedIndexChanged += new System.EventHandler(this.Li_competition_SelectedIndexChanged);
             // 
             // lb_competition
             // 
             this.lb_competition.AutoSize = true;
             this.lb_competition.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_competition.Location = new System.Drawing.Point(402, 161);
+            this.lb_competition.Location = new System.Drawing.Point(261, 161);
             this.lb_competition.Name = "lb_competition";
             this.lb_competition.Size = new System.Drawing.Size(106, 20);
             this.lb_competition.TabIndex = 13;
@@ -128,6 +130,7 @@
             this.li_round.Name = "li_round";
             this.li_round.Size = new System.Drawing.Size(152, 28);
             this.li_round.TabIndex = 15;
+            this.li_round.SelectedIndexChanged += new System.EventHandler(this.Li_round_SelectedIndexChanged);
             // 
             // la_team
             // 
@@ -185,6 +188,7 @@
             this.btn_refresh.Size = new System.Drawing.Size(35, 35);
             this.btn_refresh.TabIndex = 20;
             this.btn_refresh.UseVisualStyleBackColor = false;
+            this.btn_refresh.Click += new System.EventHandler(this.Btn_refresh_Click);
             // 
             // btnFetchResult
             // 
@@ -197,21 +201,23 @@
             this.btnFetchResult.TabIndex = 21;
             this.btnFetchResult.Text = "Fetch Results";
             this.btnFetchResult.UseVisualStyleBackColor = false;
+            this.btnFetchResult.Click += new System.EventHandler(this.BtnFetchResult_Click);
             // 
             // li_tournament
             // 
             this.li_tournament.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.li_tournament.FormattingEnabled = true;
-            this.li_tournament.Location = new System.Drawing.Point(546, 63);
+            this.li_tournament.Location = new System.Drawing.Point(541, 63);
             this.li_tournament.Name = "li_tournament";
-            this.li_tournament.Size = new System.Drawing.Size(131, 28);
+            this.li_tournament.Size = new System.Drawing.Size(148, 28);
             this.li_tournament.TabIndex = 22;
+            this.li_tournament.SelectedIndexChanged += new System.EventHandler(this.Li_tournament_SelectedIndexChanged);
             // 
             // lb_tournament
             // 
             this.lb_tournament.AutoSize = true;
             this.lb_tournament.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lb_tournament.Location = new System.Drawing.Point(441, 66);
+            this.lb_tournament.Location = new System.Drawing.Point(432, 66);
             this.lb_tournament.Name = "lb_tournament";
             this.lb_tournament.Size = new System.Drawing.Size(103, 20);
             this.lb_tournament.TabIndex = 23;
@@ -245,6 +251,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Netball";
+            this.Load += new System.EventHandler(this.Netball_Load);
             ((System.ComponentModel.ISupportInitialize)(this.img_logo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
