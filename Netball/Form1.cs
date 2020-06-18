@@ -287,6 +287,7 @@ namespace Netball
 
                 if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
+                    btn_refresh.Enabled = false;
                     this.filePath = fbd.SelectedPath;
                     this.GetTeamInfo();
                 }
@@ -360,6 +361,7 @@ namespace Netball
             li_tournament.Enabled = true;
             this.EnableFormReady();
             this.DisableCount();
+            btn_refresh.Enabled = true;
         }
 
         private async Task GetPlayersInfo(string matchID, DateTime StartTime, string HSName, string ASName)
