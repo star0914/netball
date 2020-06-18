@@ -253,7 +253,6 @@ namespace Netball
 
         private void Btn_refresh_Click(object sender, EventArgs e)
         {
-            li_tournament.Enabled = true;
             this.DisableFormReady();
             Console.WriteLine("--- reload ---");
             this.DisableCount();
