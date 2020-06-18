@@ -38,6 +38,8 @@ namespace Netball
         private List<string[]> scrapedData = new List<string[]>() { };
         private dynamic TeamData = new Object();
 
+        private string fileName = "ANZ Premiership";
+
         public Netball()
         {
             InitializeComponent();
@@ -235,19 +237,23 @@ namespace Netball
         {
             this.DisableCount();
             this.DisableFormReady();
+            this.fileName = "";
             if (li_tournament.Text == "ANZ Premiership")
             {
                 this.secondRouter = "/anz_premiership";
+                this.fileName = "ANZ_Premiership";
             }
             else if (li_tournament.Text == "Super Netball")
             {
                 this.secondRouter = "/super_netball";
+                this.fileName = "Super_Netball";
             }
             this.GetInitialAllData();
         }
 
         private void Btn_refresh_Click(object sender, EventArgs e)
         {
+            li_tournament.Enabled = true;
             this.DisableFormReady();
             Console.WriteLine("--- reload ---");
             this.DisableCount();
@@ -274,27 +280,226 @@ namespace Netball
 
         private void BtnFetchResult_Click(object sender, EventArgs e)
         {
-            //this.filePath = string.Empty;
+            this.filePath = string.Empty;
 
-            //using (var fbd = new FolderBrowserDialog())
-            //{
-            //    DialogResult result = fbd.ShowDialog();
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
 
-            //    if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-            //    {
-            //        this.filePath = fbd.SelectedPath;
-            //        this.GetTeamInfo();
-            //    }
-            //}
-
-            this.GetTeamInfo();
-
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    this.filePath = fbd.SelectedPath;
+                    this.GetTeamInfo();
+                }
+            }
         }
 
         private async Task GetTeamInfo()
         {
-            Console.WriteLine("--------team info------------");
-            Console.WriteLine(this.selectedId);
+            this.DisableFormReady();
+            this.DisplayCount();
+            li_tournament.Enabled = false;
+
+            this.scrapedData = new List<string[]>() { };
+            this.scrapedData.Add(this.TitleRow);
+
+            dynamic PlayDetail = new object();
+            dynamic matchInfo = new object();
+
+            string api = this.base_url + "/data/" + this.selectedId + "/fixture.json";
+            await Task.Run(() => { PlayDetail = JsonConvert.DeserializeObject<dynamic>(GetAllData(api)); });
+            if (PlayDetail != null)
+            {
+                matchInfo = PlayDetail.fixture.match;
+
+                int index = 0;
+
+                List<dynamic> Infos = new List<dynamic>(matchInfo);
+                List<dynamic> matchInfos = Infos.Where(t => (string)t["roundNumber"] == this.roundVal).ToList();
+
+                string total_count = (matchInfos.Count).ToString();
+                la_total.Text = total_count;
+
+                foreach (var item in matchInfos)
+                {
+                    la_cu_state.Text = (index + 1).ToString();
+
+                    string MatchID = "";
+                    MatchID = item.matchId;
+                    DateTime LocalStartTime = Convert.ToDateTime(item.localStartTime);
+                    string homeSquadName = item.homeSquadName;
+                    string awaySquadName = item.awaySquadName;
+
+                    if (MatchID != null)
+                    {
+                        await this.GetPlayersInfo(MatchID, LocalStartTime, homeSquadName, awaySquadName);
+                    }
+
+                    index++;
+                }
+            }
+
+            Console.WriteLine("--------generating Data----------");
+            this.GenerateCSV(this.scrapedData);
+        }
+
+        private void GenerateCSV(List<string[]> output)
+        {
+            DateTime now = DateTime.Now;
+            var nowDay = now.Day + "_" + now.Month + "_" + now.Year + "_" + now.Hour + "_" + now.Minute + "_" + now.Second;
+            string generatePath = this.filePath + @"\" + this.fileName + "_" + nowDay + ".csv";
+            string delimiter = ",";
+
+            int length = output.ToArray().GetLength(0);
+            StringBuilder sb = new StringBuilder();
+            for (int index = 0; index < length; index++)
+            {
+                sb.AppendLine(string.Join(delimiter, output[index]));
+            }
+            File.WriteAllText(generatePath, sb.ToString());
+            System.Windows.Forms.MessageBox.Show("CSV file creation success!", "Message");
+            li_tournament.Enabled = true;
+            this.EnableFormReady();
+            this.DisableCount();
+        }
+
+        private async Task GetPlayersInfo(string matchID, DateTime StartTime, string HSName, string ASName)
+        {
+            int rowAmount = this.TitleRow.Length;
+            dynamic PlayDetail = new Object();
+            string detailApi = this.base_url + "/data/" + this.selectedId + "/" + matchID + ".json";
+            Console.WriteLine(detailApi);
+
+            string homeSquadId = "";
+            string awaySquadId = "";
+
+            await Task.Run(() => { PlayDetail = JsonConvert.DeserializeObject<dynamic>(GetAllData(detailApi)); });
+            if (PlayDetail != null)
+            {
+                // homeTeam Data
+                homeSquadId = PlayDetail.matchStats.matchInfo.homeSquadId;
+
+                if (PlayDetail.matchStats.playerStats.ToString() != "")
+                {
+                    List<dynamic> PlayersInfoA = new List<dynamic>(PlayDetail.matchStats.playerStats.player);
+                    List<dynamic> SortedTeamAValue = PlayersInfoA.Where(t => (string)t["squadId"] == homeSquadId).OrderByDescending(x => Convert.ToInt32(x.goals)).ToList();
+
+                    int lenA = SortedTeamAValue.Count;
+                    for (int i = 0; i < lenA; i++)
+                    {
+                        string[] rowDataA = this.IndividialPlayerInfo(rowAmount, SortedTeamAValue[i], StartTime, HSName, ASName, PlayDetail, homeSquadId, i);
+                        this.scrapedData.Add(rowDataA);
+                    }
+                }
+
+                // AwayTeam Data
+                awaySquadId = PlayDetail.matchStats.matchInfo.awaySquadId;
+
+                if (PlayDetail.matchStats.playerStats.ToString() != "")
+                {
+                    List<dynamic> PlayersInfoB = new List<dynamic>(PlayDetail.matchStats.playerStats.player);
+                    List<dynamic> SortedTeamBValue = PlayersInfoB.Where(t => (string)t["squadId"] == awaySquadId).OrderByDescending(x => Convert.ToInt32(x.goals)).ToList();
+
+                    int lenB = SortedTeamBValue.Count;
+                    for (int i = 0; i < lenB; i++)
+                    {
+                        string[] rowDataB = this.IndividialPlayerInfo(rowAmount, SortedTeamBValue[i], StartTime, ASName, HSName, PlayDetail, awaySquadId, i);
+                        this.scrapedData.Add(rowDataB);
+                    }
+                }
+              
+            }
+        }
+
+        private string[] IndividialPlayerInfo(int rowLen, dynamic Player, DateTime startTime, string TeamName, string Opposition, dynamic AllDetail, string SquadId, int index)
+        {
+            string playerID = Player.playerId;
+            List<dynamic> playerDetails = new List<dynamic>(AllDetail.matchStats.playerInfo.player);
+            List<dynamic> playerInfo = playerDetails.Where(t => (string)t["playerId"] == playerID).ToList();
+
+            List<dynamic> teamPeriodStats = new List<dynamic>(AllDetail.matchStats.teamPeriodStats.team);
+            List<dynamic> matchedPeriodState = teamPeriodStats.Where(t => (string)t["squadId"] == SquadId).ToList();
+
+            List<dynamic> teamStats = new List<dynamic>(AllDetail.matchStats.teamStats.team);
+            List<dynamic> matchedteamStats = teamStats.Where(t => (string)t["squadId"] == SquadId).ToList();
+
+            double goal_per = 0;
+
+            long goalValue = Player.goals.Value;
+            long goalAttemptsValue = Player.goalAttempts.Value;
+
+            goal_per = Math.Round(goalValue * 1000.0 / goalAttemptsValue) / 10;
+            if (Double.IsNaN(goal_per)) goal_per = 0;
+
+            string[] newRow = new string[rowLen];
+
+            newRow[0] = this.seasonVal;
+            newRow[1] = this.competitionVal;
+            newRow[2] = this.roundVal;
+            newRow[3] = startTime.ToString("dddd. MMMM dd. yyyy");
+            newRow[4] = TeamName;
+            newRow[5] = Opposition;
+            newRow[6] = Player.startingPositionCode;
+            newRow[7] = playerInfo[0].firstname + " " + playerInfo[0].surname;
+            newRow[8] = Player.minutesPlayed;
+            newRow[9] = Player.quartersPlayed;
+            newRow[10] = Player.goals + " | " + Player.goalAttempts;
+            newRow[11] = Player.goalAttempts;
+            newRow[12] = goal_per.ToString();
+            newRow[13] = Player.goalAssists;
+            newRow[14] = Player.feeds;
+            newRow[15] = Player.feedWithAttempt;
+            newRow[16] = Player.gain;
+            newRow[17] = Player.intercepts;
+            newRow[18] = Player.interceptPassThrown;
+            newRow[19] = Player.deflectionWithGain; //DEFG
+            newRow[20] = Player.deflectionWithNoGain;
+            newRow[21] = Player.rebounds;
+            newRow[22] = Player.centrePassReceives;
+            newRow[23] = Player.pickups;
+            newRow[24] = Player.contactPenalties;
+            newRow[25] = Player.obstructionPenalties;
+            newRow[26] = Player.generalPlayTurnovers;
+            newRow[27] = Player.badPasses;
+            newRow[28] = Player.badHands;
+            newRow[29] = Player.offsides;
+            newRow[30] = Player.centrePassReceives; // CPB
+
+            if (index == 0)
+            {
+                newRow[31] = matchedPeriodState[0].goals;
+                newRow[32] = matchedPeriodState[1].goals;
+                newRow[33] = matchedPeriodState[2].goals;
+                newRow[34] = matchedPeriodState[3].goals;
+                newRow[35] = ""; // OT
+                newRow[36] = matchedteamStats[0].goals;
+
+                newRow[37] = matchedteamStats[0].goalsFromCentrePass;
+                newRow[38] = matchedteamStats[0].centrePassToGoalPerc;
+                newRow[39] = matchedteamStats[0].goalsFromGain;
+                newRow[40] = matchedteamStats[0].gainToGoalPerc;
+                newRow[41] = matchedteamStats[0].goalsFromTurnovers;
+                newRow[42] = matchedteamStats[0].turnoverToGoalPerc;
+                newRow[43] = matchedteamStats[0].missedShotConversion;
+
+            } else
+            {
+                newRow[31] = "";
+                newRow[32] = "";
+                newRow[33] = "";
+                newRow[34] = "";
+                newRow[35] = "";
+                newRow[36] = "";
+                newRow[37] = "";
+                newRow[38] = "";
+                newRow[39] = "";
+                newRow[40] = "";
+                newRow[41] = "";
+                newRow[42] = "";
+                newRow[43] = "";
+            }
+
+            return newRow;
         }
 
         private void DisableCount()
