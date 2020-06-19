@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Netball));
-            this.img_logo = new System.Windows.Forms.PictureBox();
             this.lb_logoTxt = new System.Windows.Forms.Label();
             this.li_season = new System.Windows.Forms.ComboBox();
             this.lb_season = new System.Windows.Forms.Label();
@@ -41,26 +40,13 @@
             this.la_cu_state = new System.Windows.Forms.Label();
             this.la_slash = new System.Windows.Forms.Label();
             this.la_total = new System.Windows.Forms.Label();
-            this.btn_refresh = new System.Windows.Forms.Button();
             this.btnFetchResult = new System.Windows.Forms.Button();
             this.li_tournament = new System.Windows.Forms.ComboBox();
             this.lb_tournament = new System.Windows.Forms.Label();
+            this.btn_refresh = new System.Windows.Forms.Button();
+            this.img_logo = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.img_logo)).BeginInit();
             this.SuspendLayout();
-            // 
-            // img_logo
-            // 
-            this.img_logo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.img_logo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.img_logo.Image = ((System.Drawing.Image)(resources.GetObject("img_logo.Image")));
-            this.img_logo.Location = new System.Drawing.Point(56, 43);
-            this.img_logo.Name = "img_logo";
-            this.img_logo.Size = new System.Drawing.Size(50, 52);
-            this.img_logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.img_logo.TabIndex = 8;
-            this.img_logo.TabStop = false;
             // 
             // lb_logoTxt
             // 
@@ -172,24 +158,6 @@
             this.la_total.TabIndex = 19;
             this.la_total.Text = "0";
             // 
-            // btn_refresh
-            // 
-            this.btn_refresh.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_refresh.BackColor = System.Drawing.Color.Transparent;
-            this.btn_refresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btn_refresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_refresh.Image = ((System.Drawing.Image)(resources.GetObject("btn_refresh.Image")));
-            this.btn_refresh.Location = new System.Drawing.Point(695, 60);
-            this.btn_refresh.MaximumSize = new System.Drawing.Size(35, 35);
-            this.btn_refresh.Name = "btn_refresh";
-            this.btn_refresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btn_refresh.Size = new System.Drawing.Size(35, 35);
-            this.btn_refresh.TabIndex = 20;
-            this.btn_refresh.UseVisualStyleBackColor = false;
-            this.btn_refresh.Click += new System.EventHandler(this.Btn_refresh_Click);
-            // 
             // btnFetchResult
             // 
             this.btnFetchResult.BackColor = System.Drawing.Color.Transparent;
@@ -222,6 +190,37 @@
             this.lb_tournament.Size = new System.Drawing.Size(103, 20);
             this.lb_tournament.TabIndex = 23;
             this.lb_tournament.Text = "Tournament :";
+            // 
+            // btn_refresh
+            // 
+            this.btn_refresh.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_refresh.BackColor = System.Drawing.Color.Transparent;
+            this.btn_refresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btn_refresh.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_refresh.Image = ((System.Drawing.Image)(resources.GetObject("btn_refresh.Image")));
+            this.btn_refresh.Location = new System.Drawing.Point(695, 60);
+            this.btn_refresh.MaximumSize = new System.Drawing.Size(35, 35);
+            this.btn_refresh.Name = "btn_refresh";
+            this.btn_refresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btn_refresh.Size = new System.Drawing.Size(35, 35);
+            this.btn_refresh.TabIndex = 20;
+            this.btn_refresh.UseVisualStyleBackColor = false;
+            this.btn_refresh.Click += new System.EventHandler(this.Btn_refresh_Click);
+            // 
+            // img_logo
+            // 
+            this.img_logo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.img_logo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.img_logo.Location = new System.Drawing.Point(56, 43);
+            this.img_logo.Name = "img_logo";
+            this.img_logo.Size = new System.Drawing.Size(50, 52);
+            this.img_logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.img_logo.TabIndex = 8;
+            this.img_logo.TabStop = false;
             // 
             // Netball
             // 

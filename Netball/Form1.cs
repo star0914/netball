@@ -242,11 +242,13 @@ namespace Netball
             {
                 this.secondRouter = "/anz_premiership";
                 this.fileName = "ANZ_Premiership";
+                img_logo.Image = Properties.Resources.logo1;
             }
             else if (li_tournament.Text == "Super Netball")
             {
                 this.secondRouter = "/super_netball";
                 this.fileName = "Super_Netball";
+                img_logo.Image = Properties.Resources.logo2;
             }
             this.GetInitialAllData();
         }
