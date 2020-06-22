@@ -446,7 +446,7 @@ namespace Netball
             newRow[7] = playerInfo[0].firstname + " " + playerInfo[0].surname;
             newRow[8] = Player.minutesPlayed;
             newRow[9] = Player.quartersPlayed;
-            newRow[10] = Player.goals + " | " + Player.goalAttempts;
+            newRow[10] = Player.goals;
             newRow[11] = Player.goalAttempts;
             newRow[12] = goal_per.ToString();
             newRow[13] = Player.goalAssists;
