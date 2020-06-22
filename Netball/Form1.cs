@@ -34,7 +34,7 @@ namespace Netball
         private string filePath = string.Empty;
 
         private Dictionary<string, object> teamInfo = new Dictionary<string, object>();
-        private string[] TitleRow = { "Season", "Competition", "Round", "Date", "Team", "Opposition", "POS", "Name", "MIN", "QP", "G", "A", "GS%", "GA", "F", "FWA", "GN", "I", "IPT", "DEFG", "DEFN", "R", "CR", "PU", "C", "O", "GPT", "BP", "BH", "OFF", "CPB", "1ST", "2ND", "3RD", "4TH", "OT", "TOTAL", "Goals from Centre Pass", "Centre Pass to Goal Percentage", "Goals from Gain", "Gain to Goal Percentage", "Goals from Turnovers", "Turnover to Goal Percentage", "Missed Shot Conversion" };
+        private string[] TitleRow = { "Season", "Competition", "Round", "Date", "Team", "Opposition", "POS", "Name", "MIN", "QP", "NNP", "G", "A", "GS%", "GA", "F", "FWA", "GN", "I", "IPT", "DEFG", "DEFN", "R", "CR", "PU", "C", "O", "GPT", "BP", "BH", "OFF", "CPB", "1ST", "2ND", "3RD", "4TH", "OT", "TOTAL", "Goals from Centre Pass", "Centre Pass to Goal Percentage", "Goals from Gain", "Gain to Goal Percentage", "Goals from Turnovers", "Turnover to Goal Percentage", "Missed Shot Conversion" };
         private List<string[]> scrapedData = new List<string[]>() { };
         private dynamic TeamData = new Object();
 
@@ -243,12 +243,14 @@ namespace Netball
                 this.secondRouter = "/anz_premiership";
                 this.fileName = "ANZ_Premiership";
                 img_logo.Image = Properties.Resources.logo1;
+                this.TitleRow = new string[] { "Season", "Competition", "Round", "Date", "Team", "Opposition", "POS", "Name", "MIN", "QP", "G", "A", "GS%", "GA", "F", "FWA", "GN", "I", "IPT", "DEFG", "DEFN", "R", "CR", "PU", "C", "O", "GPT", "BP", "BH", "OFF", "CPB", "1ST", "2ND", "3RD", "4TH", "OT", "TOTAL", "Goals from Centre Pass", "Centre Pass to Goal Percentage", "Goals from Gain", "Gain to Goal Percentage", "Goals from Turnovers", "Turnover to Goal Percentage", "Missed Shot Conversion" };
             }
             else if (li_tournament.Text == "Super Netball")
             {
                 this.secondRouter = "/super_netball";
                 this.fileName = "Super_Netball";
                 img_logo.Image = Properties.Resources.logo2;
+                this.TitleRow = new string[] { "Season", "Competition", "Round", "Date", "Team", "Opposition", "POS", "Name", "MIN", "QP", "NNP", "G", "A", "GS%", "GA", "F", "FWA", "GN", "I", "IPT", "DEFG", "DEFN", "R", "CR", "PU", "C", "O", "GPT", "BP", "BH", "OFF", "CPB", "1ST", "2ND", "3RD", "4TH", "OT", "TOTAL", "Goals from Centre Pass", "Centre Pass to Goal Percentage", "Goals from Gain", "Gain to Goal Percentage", "Goals from Turnovers", "Turnover to Goal Percentage", "Missed Shot Conversion" };
             }
             this.GetInitialAllData();
         }
@@ -436,72 +438,148 @@ namespace Netball
 
             string[] newRow = new string[rowLen];
 
-            newRow[0] = this.seasonVal;
-            newRow[1] = this.competitionVal;
-            newRow[2] = this.roundVal;
-            newRow[3] = startTime.ToString("dddd. MMMM dd. yyyy");
-            newRow[4] = TeamName;
-            newRow[5] = Opposition;
-            newRow[6] = Player.startingPositionCode;
-            newRow[7] = playerInfo[0].firstname + " " + playerInfo[0].surname;
-            newRow[8] = Player.minutesPlayed;
-            newRow[9] = Player.quartersPlayed;
-            newRow[10] = Player.goals;
-            newRow[11] = Player.goalAttempts;
-            newRow[12] = goal_per.ToString();
-            newRow[13] = Player.goalAssists;
-            newRow[14] = Player.feeds;
-            newRow[15] = Player.feedWithAttempt;
-            newRow[16] = Player.gain;
-            newRow[17] = Player.intercepts;
-            newRow[18] = Player.interceptPassThrown;
-            newRow[19] = Player.deflectionWithGain; //DEFG
-            newRow[20] = Player.deflectionWithNoGain;
-            newRow[21] = Player.rebounds;
-            newRow[22] = Player.centrePassReceives;
-            newRow[23] = Player.pickups;
-            newRow[24] = Player.contactPenalties;
-            newRow[25] = Player.obstructionPenalties;
-            newRow[26] = Player.generalPlayTurnovers;
-            newRow[27] = Player.badPasses;
-            newRow[28] = Player.badHands;
-            newRow[29] = Player.offsides;
-            newRow[30] = Player.breaks; // CPB
 
-            if (index == 0)
+            if (this.fileName == "ANZ_Premiership")
             {
-                newRow[31] = matchedPeriodState[0].goals;
-                newRow[32] = matchedPeriodState[1].goals;
-                newRow[33] = matchedPeriodState[2].goals;
-                newRow[34] = matchedPeriodState[3].goals;
-                newRow[35] = ""; // OT
-                newRow[36] = matchedteamStats[0].goals;
+                newRow[0] = this.seasonVal;
+                newRow[1] = this.competitionVal;
+                newRow[2] = this.roundVal;
+                newRow[3] = startTime.ToString("dddd. MMMM dd. yyyy");
+                newRow[4] = TeamName;
+                newRow[5] = Opposition;
+                newRow[6] = Player.startingPositionCode;
+                newRow[7] = playerInfo[0].firstname + " " + playerInfo[0].surname;
+                newRow[8] = Player.minutesPlayed;
+                newRow[9] = Player.quartersPlayed;
+                newRow[10] = Player.goals;
+                newRow[11] = Player.goalAttempts;
+                newRow[12] = goal_per.ToString();
+                newRow[13] = Player.goalAssists;
+                newRow[14] = Player.feeds;
+                newRow[15] = Player.feedWithAttempt;
+                newRow[16] = Player.gain;
+                newRow[17] = Player.intercepts;
+                newRow[18] = Player.interceptPassThrown;
+                newRow[19] = Player.deflectionWithGain; //DEFG
+                newRow[20] = Player.deflectionWithNoGain;
+                newRow[21] = Player.rebounds;
+                newRow[22] = Player.centrePassReceives;
+                newRow[23] = Player.pickups;
+                newRow[24] = Player.contactPenalties;
+                newRow[25] = Player.obstructionPenalties;
+                newRow[26] = Player.generalPlayTurnovers;
+                newRow[27] = Player.badPasses;
+                newRow[28] = Player.badHands;
+                newRow[29] = Player.offsides;
+                newRow[30] = Player.breaks; // CPB
 
-                newRow[37] = matchedteamStats[0].goalsFromCentrePass;
-                newRow[38] = matchedteamStats[0].centrePassToGoalPerc;
-                newRow[39] = matchedteamStats[0].goalsFromGain;
-                newRow[40] = matchedteamStats[0].gainToGoalPerc;
-                newRow[41] = matchedteamStats[0].goalsFromTurnovers;
-                newRow[42] = matchedteamStats[0].turnoverToGoalPerc;
-                newRow[43] = matchedteamStats[0].missedShotConversion;
+                if (index == 0)
+                {
+                    newRow[31] = matchedPeriodState[0].goals;
+                    newRow[32] = matchedPeriodState[1].goals;
+                    newRow[33] = matchedPeriodState[2].goals;
+                    newRow[34] = matchedPeriodState[3].goals;
+                    newRow[35] = ""; // OT
+                    newRow[36] = matchedteamStats[0].goals;
 
-            } else
-            {
-                newRow[31] = "";
-                newRow[32] = "";
-                newRow[33] = "";
-                newRow[34] = "";
-                newRow[35] = "";
-                newRow[36] = "";
-                newRow[37] = "";
-                newRow[38] = "";
-                newRow[39] = "";
-                newRow[40] = "";
-                newRow[41] = "";
-                newRow[42] = "";
-                newRow[43] = "";
+                    newRow[37] = matchedteamStats[0].goalsFromCentrePass;
+                    newRow[38] = matchedteamStats[0].centrePassToGoalPerc;
+                    newRow[39] = matchedteamStats[0].goalsFromGain;
+                    newRow[40] = matchedteamStats[0].gainToGoalPerc;
+                    newRow[41] = matchedteamStats[0].goalsFromTurnovers;
+                    newRow[42] = matchedteamStats[0].turnoverToGoalPerc;
+                    newRow[43] = matchedteamStats[0].missedShotConversion;
+
+                }
+                else
+                {
+                    newRow[31] = "";
+                    newRow[32] = "";
+                    newRow[33] = "";
+                    newRow[34] = "";
+                    newRow[35] = "";
+                    newRow[36] = "";
+                    newRow[37] = "";
+                    newRow[38] = "";
+                    newRow[39] = "";
+                    newRow[40] = "";
+                    newRow[41] = "";
+                    newRow[42] = "";
+                    newRow[43] = "";
+                }
             }
+            else
+            {
+                newRow[0] = this.seasonVal;
+                newRow[1] = this.competitionVal;
+                newRow[2] = this.roundVal;
+                newRow[3] = startTime.ToString("dddd. MMMM dd. yyyy");
+                newRow[4] = TeamName;
+                newRow[5] = Opposition;
+                newRow[6] = Player.startingPositionCode;
+                newRow[7] = playerInfo[0].firstname + " " + playerInfo[0].surname;
+                newRow[8] = Player.minutesPlayed;
+                newRow[9] = Player.quartersPlayed;
 
+                newRow[10] = Player.netPoints;
+
+                newRow[11] = Player.goals;
+                newRow[12] = Player.goalAttempts;
+                newRow[13] = goal_per.ToString();
+                newRow[14] = Player.goalAssists;
+                newRow[15] = Player.feeds;
+                newRow[16] = Player.feedWithAttempt;
+                newRow[17] = Player.gain;
+                newRow[18] = Player.intercepts;
+                newRow[19] = Player.interceptPassThrown;
+                newRow[20] = Player.deflectionWithGain; //DEFG
+                newRow[21] = Player.deflectionWithNoGain;
+                newRow[22] = Player.rebounds;
+                newRow[23] = Player.centrePassReceives;
+                newRow[24] = Player.pickups;
+                newRow[25] = Player.contactPenalties;
+                newRow[26] = Player.obstructionPenalties;
+                newRow[27] = Player.generalPlayTurnovers;
+                newRow[28] = Player.badPasses;
+                newRow[29] = Player.badHands;
+                newRow[30] = Player.offsides;
+                newRow[31] = Player.breaks; // CPB
+
+                if (index == 0)
+                {
+                    newRow[32] = matchedPeriodState[0].goals;
+                    newRow[33] = matchedPeriodState[1].goals;
+                    newRow[34] = matchedPeriodState[2].goals;
+                    newRow[35] = matchedPeriodState[3].goals;
+                    newRow[36] = ""; // OT
+                    newRow[37] = matchedteamStats[0].goals;
+
+                    newRow[38] = matchedteamStats[0].goalsFromCentrePass;
+                    newRow[39] = matchedteamStats[0].centrePassToGoalPerc;
+                    newRow[40] = matchedteamStats[0].goalsFromGain;
+                    newRow[41] = matchedteamStats[0].gainToGoalPerc;
+                    newRow[42] = matchedteamStats[0].goalsFromTurnovers;
+                    newRow[43] = matchedteamStats[0].turnoverToGoalPerc;
+                    newRow[44] = matchedteamStats[0].missedShotConversion;
+
+                }
+                else
+                {
+                    newRow[32] = "";
+                    newRow[33] = "";
+                    newRow[34] = "";
+                    newRow[35] = "";
+                    newRow[36] = "";
+                    newRow[37] = "";
+                    newRow[38] = "";
+                    newRow[39] = "";
+                    newRow[40] = "";
+                    newRow[41] = "";
+                    newRow[42] = "";
+                    newRow[43] = "";
+                    newRow[44] = "";
+                }
+            }
             return newRow;
         }
 
