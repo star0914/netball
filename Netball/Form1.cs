@@ -466,7 +466,7 @@ namespace Netball
             newRow[27] = Player.badPasses;
             newRow[28] = Player.badHands;
             newRow[29] = Player.offsides;
-            newRow[30] = Player.centrePassReceives; // CPB
+            newRow[30] = Player.breaks; // CPB
 
             if (index == 0)
             {
