@@ -230,7 +230,7 @@
             // 
             this.la_round.AutoSize = true;
             this.la_round.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_round.Location = new System.Drawing.Point(61, 337);
+            this.la_round.Location = new System.Drawing.Point(61, 340);
             this.la_round.Name = "la_round";
             this.la_round.Size = new System.Drawing.Size(53, 15);
             this.la_round.TabIndex = 24;
@@ -240,7 +240,7 @@
             // 
             this.la_total_round.AutoSize = true;
             this.la_total_round.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_total_round.Location = new System.Drawing.Point(114, 337);
+            this.la_total_round.Location = new System.Drawing.Point(114, 340);
             this.la_total_round.Name = "la_total_round";
             this.la_total_round.Size = new System.Drawing.Size(14, 15);
             this.la_total_round.TabIndex = 25;
@@ -250,7 +250,7 @@
             // 
             this.la_slash1.AutoSize = true;
             this.la_slash1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_slash1.Location = new System.Drawing.Point(138, 337);
+            this.la_slash1.Location = new System.Drawing.Point(138, 340);
             this.la_slash1.Name = "la_slash1";
             this.la_slash1.Size = new System.Drawing.Size(10, 15);
             this.la_slash1.TabIndex = 26;
@@ -260,7 +260,7 @@
             // 
             this.la_cu_round.AutoSize = true;
             this.la_cu_round.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_cu_round.Location = new System.Drawing.Point(148, 337);
+            this.la_cu_round.Location = new System.Drawing.Point(148, 340);
             this.la_cu_round.Name = "la_cu_round";
             this.la_cu_round.Size = new System.Drawing.Size(14, 15);
             this.la_cu_round.TabIndex = 27;
