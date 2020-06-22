@@ -23,6 +23,8 @@ namespace Netball
         private string competitionVal = "";
         private string roundVal = "";
 
+        private int roundAmount = 0;
+
         public string base_url = "https://mc.championdata.com";
         public string secondRouter = "/anz_premiership";
         private JArray avaliableIDs = new JArray();
@@ -49,6 +51,7 @@ namespace Netball
         {
             this.DisableCount();
             this.DisableFormReady();
+            this.DisableRoundCount();
             this.initTournament();
         }
 
@@ -150,20 +153,20 @@ namespace Netball
         {
             if (this.AvaliableGameInfo != null)
             {
-                var roundCount = 0;
+                this.roundAmount = 0;
                 foreach (var item in this.AvaliableGameInfo)
                 {
                     if (item.season == this.seasonVal && item.name == this.competitionVal)
                     {
-                        roundCount = item.rounds;
+                        this.roundAmount = item.rounds;
                         this.selectedId = item.id;
                     }
                 }
 
-                if (roundCount > 0 )
+                if (this.roundAmount > 0 )
                 {
-                    List<string> roundArray = new List<string>() { };
-                    for (int i = 0; i < roundCount; i++)
+                    List<string> roundArray = new List<string>() {"All"};
+                    for (int i = 0; i < this.roundAmount; i++)
                     {
                         roundArray.Add((i + 1).ToString());
                     }
@@ -236,6 +239,7 @@ namespace Netball
         private void Li_tournament_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.DisableCount();
+            this.DisableRoundCount();
             this.DisableFormReady();
             this.fileName = "";
             if (li_tournament.Text == "ANZ Premiership")
@@ -260,6 +264,7 @@ namespace Netball
             this.DisableFormReady();
             Console.WriteLine("--- reload ---");
             this.DisableCount();
+            this.DisableRoundCount();
             this.GetInitialAllData();
         }
 
@@ -301,6 +306,7 @@ namespace Netball
         private async Task GetTeamInfo()
         {
             this.DisableFormReady();
+            this.DisableRoundCount();
             this.DisplayCount();
             li_tournament.Enabled = false;
 
@@ -308,43 +314,61 @@ namespace Netball
             this.scrapedData.Add(this.TitleRow);
 
             dynamic PlayDetail = new object();
-            dynamic matchInfo = new object();
+            dynamic matchDetail = new object();
 
             string api = this.base_url + "/data/" + this.selectedId + "/fixture.json";
             await Task.Run(() => { PlayDetail = JsonConvert.DeserializeObject<dynamic>(GetAllData(api)); });
             if (PlayDetail != null)
             {
-                matchInfo = PlayDetail.fixture.match;
+                matchDetail = PlayDetail.fixture.match;
 
-                int index = 0;
-
-                List<dynamic> Infos = new List<dynamic>(matchInfo);
-                List<dynamic> matchInfos = Infos.Where(t => (string)t["roundNumber"] == this.roundVal).ToList();
-
-                string total_count = (matchInfos.Count).ToString();
-                la_total.Text = total_count;
-
-                foreach (var item in matchInfos)
+                if (this.roundVal == "All")
                 {
-                    la_cu_state.Text = (index + 1).ToString();
-
-                    string MatchID = "";
-                    MatchID = item.matchId;
-                    DateTime LocalStartTime = Convert.ToDateTime(item.localStartTime);
-                    string homeSquadName = item.homeSquadName;
-                    string awaySquadName = item.awaySquadName;
-
-                    if (MatchID != null)
+                    this.DisplayRoundCount();
+                    la_total_round.Text = this.roundAmount.ToString();
+                    for (int i = 1; i <= this.roundAmount; i++)
                     {
-                        await this.GetPlayersInfo(MatchID, LocalStartTime, homeSquadName, awaySquadName);
+                        la_cu_round.Text = i.ToString();
+                        await this.GetPlayersDetail(i.ToString(), matchDetail);
                     }
-
-                    index++;
+                } else
+                {
+                    await this.GetPlayersDetail(this.roundVal, matchDetail);
                 }
             }
 
             Console.WriteLine("--------generating Data----------");
             this.GenerateCSV(this.scrapedData);
+        }
+
+        private async Task GetPlayersDetail(string roundNum, dynamic matchInfo)
+        {
+            int index = 0;
+
+            List<dynamic> Infos = new List<dynamic>(matchInfo);
+            List<dynamic> matchInfos = Infos.Where(t => (string)t["roundNumber"] == roundNum).ToList();
+
+            string total_count = (matchInfos.Count).ToString();
+
+            la_total.Text = total_count;
+
+            foreach (var item in matchInfos)
+            {
+                la_cu_state.Text = (index + 1).ToString();
+
+                string MatchID = "";
+                MatchID = item.matchId;
+                DateTime LocalStartTime = Convert.ToDateTime(item.localStartTime);
+                string homeSquadName = item.homeSquadName;
+                string awaySquadName = item.awaySquadName;
+
+                if (MatchID != null)
+                {
+                    await this.GetPlayersInfo(MatchID, LocalStartTime, homeSquadName, awaySquadName, roundNum);
+                }
+
+                index++;
+            }
         }
 
         private void GenerateCSV(List<string[]> output)
@@ -365,10 +389,11 @@ namespace Netball
             li_tournament.Enabled = true;
             this.EnableFormReady();
             this.DisableCount();
+            this.DisableRoundCount();
             btn_refresh.Enabled = true;
         }
 
-        private async Task GetPlayersInfo(string matchID, DateTime StartTime, string HSName, string ASName)
+        private async Task GetPlayersInfo(string matchID, DateTime StartTime, string HSName, string ASName, string RoundVal)
         {
             int rowAmount = this.TitleRow.Length;
             dynamic PlayDetail = new Object();
@@ -392,7 +417,7 @@ namespace Netball
                     int lenA = SortedTeamAValue.Count;
                     for (int i = 0; i < lenA; i++)
                     {
-                        string[] rowDataA = this.IndividialPlayerInfo(rowAmount, SortedTeamAValue[i], StartTime, HSName, ASName, PlayDetail, homeSquadId, i);
+                        string[] rowDataA = this.IndividialPlayerInfo(rowAmount, SortedTeamAValue[i], StartTime, HSName, ASName, PlayDetail, homeSquadId, i, RoundVal);
                         this.scrapedData.Add(rowDataA);
                     }
                 }
@@ -408,7 +433,7 @@ namespace Netball
                     int lenB = SortedTeamBValue.Count;
                     for (int i = 0; i < lenB; i++)
                     {
-                        string[] rowDataB = this.IndividialPlayerInfo(rowAmount, SortedTeamBValue[i], StartTime, ASName, HSName, PlayDetail, awaySquadId, i);
+                        string[] rowDataB = this.IndividialPlayerInfo(rowAmount, SortedTeamBValue[i], StartTime, ASName, HSName, PlayDetail, awaySquadId, i, RoundVal);
                         this.scrapedData.Add(rowDataB);
                     }
                 }
@@ -416,7 +441,7 @@ namespace Netball
             }
         }
 
-        private string[] IndividialPlayerInfo(int rowLen, dynamic Player, DateTime startTime, string TeamName, string Opposition, dynamic AllDetail, string SquadId, int index)
+        private string[] IndividialPlayerInfo(int rowLen, dynamic Player, DateTime startTime, string TeamName, string Opposition, dynamic AllDetail, string SquadId, int index, string RoundName)
         {
             string playerID = Player.playerId;
             List<dynamic> playerDetails = new List<dynamic>(AllDetail.matchStats.playerInfo.player);
@@ -443,7 +468,7 @@ namespace Netball
             {
                 newRow[0] = this.seasonVal;
                 newRow[1] = this.competitionVal;
-                newRow[2] = this.roundVal;
+                newRow[2] = RoundName;
                 newRow[3] = startTime.ToString("dddd. MMMM dd. yyyy");
                 newRow[4] = TeamName;
                 newRow[5] = Opposition;
@@ -489,7 +514,6 @@ namespace Netball
                     newRow[41] = matchedteamStats[0].goalsFromTurnovers;
                     newRow[42] = matchedteamStats[0].turnoverToGoalPerc;
                     newRow[43] = matchedteamStats[0].missedShotConversion;
-
                 }
                 else
                 {
@@ -512,7 +536,7 @@ namespace Netball
             {
                 newRow[0] = this.seasonVal;
                 newRow[1] = this.competitionVal;
-                newRow[2] = this.roundVal;
+                newRow[2] = RoundName;
                 newRow[3] = startTime.ToString("dddd. MMMM dd. yyyy");
                 newRow[4] = TeamName;
                 newRow[5] = Opposition;
@@ -613,6 +637,22 @@ namespace Netball
             li_competition.Enabled = false;
             li_round.Enabled = false;
             btnFetchResult.Enabled = false;
+        }
+
+        private void DisableRoundCount()
+        {
+            la_cu_round.Text = "";
+            la_total_round.Text = "";
+            la_slash1.Text = "";
+            la_round.Text = "";
+        }
+
+        private void DisplayRoundCount()
+        {
+            la_cu_round.Text = "0";
+            la_total_round.Text = "0";
+            la_slash1.Text = "/";
+            la_round.Text = "Round : ";
         }
 
     }

@@ -45,6 +45,10 @@
             this.lb_tournament = new System.Windows.Forms.Label();
             this.btn_refresh = new System.Windows.Forms.Button();
             this.img_logo = new System.Windows.Forms.PictureBox();
+            this.la_round = new System.Windows.Forms.Label();
+            this.la_total_round = new System.Windows.Forms.Label();
+            this.la_slash1 = new System.Windows.Forms.Label();
+            this.la_cu_round = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.img_logo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -122,7 +126,7 @@
             // 
             this.la_team.AutoSize = true;
             this.la_team.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_team.Location = new System.Drawing.Point(124, 367);
+            this.la_team.Location = new System.Drawing.Point(133, 367);
             this.la_team.Name = "la_team";
             this.la_team.Size = new System.Drawing.Size(41, 15);
             this.la_team.TabIndex = 16;
@@ -132,7 +136,7 @@
             // 
             this.la_cu_state.AutoSize = true;
             this.la_cu_state.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_cu_state.Location = new System.Drawing.Point(56, 367);
+            this.la_cu_state.Location = new System.Drawing.Point(107, 367);
             this.la_cu_state.Name = "la_cu_state";
             this.la_cu_state.Size = new System.Drawing.Size(14, 15);
             this.la_cu_state.TabIndex = 17;
@@ -142,7 +146,7 @@
             // 
             this.la_slash.AutoSize = true;
             this.la_slash.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_slash.Location = new System.Drawing.Point(82, 367);
+            this.la_slash.Location = new System.Drawing.Point(91, 367);
             this.la_slash.Name = "la_slash";
             this.la_slash.Size = new System.Drawing.Size(10, 15);
             this.la_slash.TabIndex = 18;
@@ -152,7 +156,7 @@
             // 
             this.la_total.AutoSize = true;
             this.la_total.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.la_total.Location = new System.Drawing.Point(90, 367);
+            this.la_total.Location = new System.Drawing.Point(68, 367);
             this.la_total.Name = "la_total";
             this.la_total.Size = new System.Drawing.Size(14, 15);
             this.la_total.TabIndex = 19;
@@ -222,11 +226,55 @@
             this.img_logo.TabIndex = 8;
             this.img_logo.TabStop = false;
             // 
+            // la_round
+            // 
+            this.la_round.AutoSize = true;
+            this.la_round.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.la_round.Location = new System.Drawing.Point(61, 337);
+            this.la_round.Name = "la_round";
+            this.la_round.Size = new System.Drawing.Size(53, 15);
+            this.la_round.TabIndex = 24;
+            this.la_round.Text = "Round : ";
+            // 
+            // la_total_round
+            // 
+            this.la_total_round.AutoSize = true;
+            this.la_total_round.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.la_total_round.Location = new System.Drawing.Point(114, 337);
+            this.la_total_round.Name = "la_total_round";
+            this.la_total_round.Size = new System.Drawing.Size(14, 15);
+            this.la_total_round.TabIndex = 25;
+            this.la_total_round.Text = "0";
+            // 
+            // la_slash1
+            // 
+            this.la_slash1.AutoSize = true;
+            this.la_slash1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.la_slash1.Location = new System.Drawing.Point(138, 337);
+            this.la_slash1.Name = "la_slash1";
+            this.la_slash1.Size = new System.Drawing.Size(10, 15);
+            this.la_slash1.TabIndex = 26;
+            this.la_slash1.Text = "/";
+            // 
+            // la_cu_round
+            // 
+            this.la_cu_round.AutoSize = true;
+            this.la_cu_round.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.la_cu_round.Location = new System.Drawing.Point(148, 337);
+            this.la_cu_round.Name = "la_cu_round";
+            this.la_cu_round.Size = new System.Drawing.Size(14, 15);
+            this.la_cu_round.TabIndex = 27;
+            this.la_cu_round.Text = "0";
+            // 
             // Netball
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.la_cu_round);
+            this.Controls.Add(this.la_slash1);
+            this.Controls.Add(this.la_total_round);
+            this.Controls.Add(this.la_round);
             this.Controls.Add(this.lb_tournament);
             this.Controls.Add(this.li_tournament);
             this.Controls.Add(this.btnFetchResult);
@@ -275,6 +323,10 @@
         private System.Windows.Forms.Button btnFetchResult;
         private System.Windows.Forms.ComboBox li_tournament;
         private System.Windows.Forms.Label lb_tournament;
+        private System.Windows.Forms.Label la_round;
+        private System.Windows.Forms.Label la_total_round;
+        private System.Windows.Forms.Label la_slash1;
+        private System.Windows.Forms.Label la_cu_round;
     }
 }
 
