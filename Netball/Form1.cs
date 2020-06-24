@@ -469,7 +469,7 @@ namespace Netball
                 newRow[0] = this.seasonVal;
                 newRow[1] = this.competitionVal;
                 newRow[2] = RoundName;
-                newRow[3] = startTime.ToString("MM/dd/yyyy");
+                newRow[3] = startTime.ToString("dd/MM/yyyy");
                 newRow[4] = TeamName;
                 newRow[5] = Opposition;
                 newRow[6] = Player.startingPositionCode;
@@ -537,7 +537,7 @@ namespace Netball
                 newRow[0] = this.seasonVal;
                 newRow[1] = this.competitionVal;
                 newRow[2] = RoundName;
-                newRow[3] = startTime.ToString("MM/dd/yyyy");
+                newRow[3] = startTime.ToString("dd/MM/yyyy");
                 newRow[4] = TeamName;
                 newRow[5] = Opposition;
                 newRow[6] = Player.startingPositionCode;
