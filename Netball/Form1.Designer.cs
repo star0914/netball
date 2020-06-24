@@ -225,6 +225,7 @@
             this.img_logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.img_logo.TabIndex = 8;
             this.img_logo.TabStop = false;
+            this.img_logo.Click += new System.EventHandler(this.Img_logo_Click);
             // 
             // la_round
             // 
